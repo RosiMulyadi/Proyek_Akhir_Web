@@ -4,6 +4,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\{UserController, RoleController, PermissionController};
 /*
 |--------------------------------------------------------------------------
@@ -26,8 +27,12 @@ Auth::routes();
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
 
 Route::post('/postlogin', [LoginController::class, 'postlogin'])->name('postlogin');
+Route::post('/postregister', [RegisterController::class, 'postregister'])->name('postregister');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home.index');
