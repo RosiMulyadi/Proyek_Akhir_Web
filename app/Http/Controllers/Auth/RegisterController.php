@@ -36,19 +36,31 @@ class RegisterController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8', // Minimal 8 karakter
+                'confirmed', // Harus cocok dengan konfirmasi password
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+                // Harus memiliki setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter khusus
+            ],
         ]);
 
+        // Membuat pengguna baru dan mengisi kolom 'created_by' dengan 'system'
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'created_by' => 'system',
         ]);
 
+        // Melakukan login pengguna yang baru dibuat
         Auth::login($user);
 
-        return redirect('auth.login');
+        // Redirect ke halaman yang sesuai (misalnya, halaman beranda)
+        return redirect('/home');
     }
+
     /**
      * Where to redirect users after registration.
      *

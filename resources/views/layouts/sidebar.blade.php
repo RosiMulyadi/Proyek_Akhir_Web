@@ -28,6 +28,23 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item{{ request()->is('stores*') ? ' menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('stores*')? 'active' : '' }}">
+                        <i class="nav-icon fas fa-store"></i>
+                        <p>
+                            Stores
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('stores.index') }}" class="nav-link {{ request()->is('stores*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>stores</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item{{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? ' menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
@@ -38,8 +55,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('users.index') }}"
-                                class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
+                            <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Users</p>
                             </a>
@@ -47,8 +63,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('roles.index') }}"
-                                class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
+                            <a href="{{ route('roles.index') }}" class="nav-link {{ request()->is('roles*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Roles</p>
                             </a>
@@ -56,8 +71,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('permissions.index') }}"
-                                class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}">
+                            <a href="{{ route('permissions.index') }}" class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Permissions</p>
                             </a>

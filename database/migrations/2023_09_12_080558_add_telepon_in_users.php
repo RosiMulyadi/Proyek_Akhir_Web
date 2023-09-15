@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('jenkel')->after('telepon')->nullable();
             $table->date('tgl_lahir')->after('jenkel')->nullable();
             $table->string('tmpt_lahir')->after('tgl_lahir')->nullable();
-            $table->string('created_by')->nullable();
+            $table->string('created_by')->default('system');
             $table->string('updated_by')->nullable();
         });
     }

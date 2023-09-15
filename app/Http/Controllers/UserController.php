@@ -101,7 +101,7 @@ class UserController extends Controller
         $userData = $request->all();
 
         $userData['password'] = Hash::make($request->input('password'));
-        $userData['created_by'] = Auth::user()->name;
+        // $userData['created_by'] = Auth::user()->name;
 
         $user = User::create($userData);
         $user->assignRole($request->input('role'));

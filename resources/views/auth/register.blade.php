@@ -82,7 +82,6 @@
                                 </label>
                             </div>
                         </div>
-
                         <div class="col-4">
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
                         </div>

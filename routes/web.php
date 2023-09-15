@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\{UserController, RoleController, PermissionController};
+use App\Http\Controllers\{UserController, RoleController, PermissionController, StoreController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -55,5 +55,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('permissions', PermissionController::class);
     Route::put('/permissions/{id}', 'PermissionController@update')->name('permissions.update');
     Route::delete('permissions/{id}', 'PermissionController@destroy')->name('permissions.destroy');
+    Route::get('/stores', [StoreController::class, 'index'])->name('stores.index');
+    Route::resource('/stores', StoreController::class);
+    Route::post('/stores', 'StoreController@store')->name('stores.store');
+    Route::resource('stores', StoreController::class);
+    Route::put('/stores/{id}', 'StoreController@update')->name('stores.update');
+    Route::delete('stores/{id}', 'StoreController@destroy')->name('stores.destroy');
 })->middleware('web');
     
