@@ -99,22 +99,16 @@ class StoreController extends Controller
             'harga' => 'required|string',
         ]);
 
-        // Mengambil data input kecuali 'gambar'
         $storeData = $request->except('gambar');
 
-        // Mengelola file gambar jika ada
         if ($request->hasFile('gambar')) {
             $gambarPath = $request->file('gambar')->store('gambar', 'public');
-            $storeData['gambar'] = $gambarPath;
+            $StoreData['gambar'] = $gambarPath;
         }
 
-        // Mengambil data toko yang akan diperbarui
         $store = Store::findOrFail($id);
-
-        // Perbarui data toko
         $store->update($storeData);
 
-        // Update 'updated_by' field
         $store->updated_by = Auth::user()->name;
         $store->save();
 

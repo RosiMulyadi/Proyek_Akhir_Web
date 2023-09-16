@@ -59,7 +59,7 @@
                         <span class="text-danger" id="harga_error"></span>
                     </div>
                     <div class="form-group">
-                        <button type="submit" id="editCompanyBtn" class="btn btn-primary">Update Store</button>
+                        <button type="submit" id="editStoreBtn" class="btn btn-primary">Update Store</button>
                         <a href="{{ route('stores.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
@@ -93,9 +93,9 @@
             reader.readAsDataURL(gambarInput.files[0]);
         }
     });
-    $("#editCompanyForm").on('submit', function(e) {
+    $("#editStoreForm").on('submit', function(e) {
         e.preventDefault();
-        var btn = $('#editCompanyBtn');
+        var btn = $('#editStoreBtn');
         btn.attr('disabled', true);
         btn.val("Loading...");
         var formData = new FormData(this);
@@ -118,8 +118,8 @@
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Company Updated',
-                        text: 'Company Berhasil Diupdate.',
+                        title: 'Store Updated',
+                        text: 'Store Berhasil Diupdate.',
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
