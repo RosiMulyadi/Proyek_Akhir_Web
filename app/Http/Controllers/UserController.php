@@ -19,13 +19,13 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    function __construct()
-    {
-        $this->middleware('permission:list-user|create-user|edit-user|delete-user', ['only' => ['index', 'store']]);
-        $this->middleware('permission:create-user', ['only' => ['create', 'store']]);
-        $this->middleware('permission:edit-user', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete-user', ['only' => ['destroy']]);
-    }
+    // function __construct()
+    // {
+    //     $this->middleware('permission:list-user|create-user|edit-user|delete-user', ['only' => ['index', 'store']]);
+    //     $this->middleware('permission:create-user', ['only' => ['create', 'store']]);
+    //     $this->middleware('permission:edit-user', ['only' => ['edit', 'update']]);
+    //     $this->middleware('permission:delete-user', ['only' => ['destroy']]);
+    // }
     /**
      * Display a listing of the resource.
      */
@@ -58,16 +58,19 @@ class UserController extends Controller
                 ->addColumn('action', function ($row) {
                     $editUrl = route('users.edit', $row->id);
                     $deleteUrl = route('users.destroy', $row->id);
+                    $showUrl = route('users.show', $row->id); // Add this line for the "Show" button
 
                     $editButton = '<a href="' . $editUrl . '" class="btn btn-sm btn-warning btn-icon btn-round"><i class="fas fa-pen-square fa-circle mt-2"></i></a>';
                     $deleteButton = '<button onclick="deleteItem(this)" data-name="' . $row->name . '" data-id="' . $row->id . '" class="btn btn-sm btn-danger btn-icon btn-round delete-button"><i class="fas fa-trash"></i></button>';
+                    $showButton = '<a href="' . $showUrl . '" class="btn btn-sm btn-primary btn-icon btn-round"><i class="fas fa-eye"></i></a>'; // "Show" button
 
-                    return $editButton . '&nbsp;&nbsp;' . $deleteButton;
+                    return $editButton . '&nbsp;&nbsp;' . $showButton . '&nbsp;&nbsp;' . $deleteButton;
                 })
-                ->rawColumns(['role', 'status', 'limit_pinjaman', 'action'])
+                ->rawColumns(['role', 'action']) // Remove 'status', 'limit_pinjaman' from rawColumns if not used
                 ->addIndexColumn()
                 ->make(true);
         }
+
         return view('pages.users.index');
     }
 
@@ -90,7 +93,7 @@ class UserController extends Controller
             'no_ktp' => 'required|string|unique:users',
             'alamat' => 'required|string',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:8',
             'telepon' => ['required', 'string', 'unique:users', 'regex:/^\d{10,12}$/'],
             'jenkel' => 'required|string',
             'tgl_lahir' => 'required|date',
@@ -122,7 +125,8 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return view('pages.users.show', compact('user'));
+        $roles = Role::all();
+        return view('pages.users.show', compact('user', 'roles'));
     }
 
     /**
@@ -166,7 +170,8 @@ class UserController extends Controller
 
         $userData = $request->except(['_token', '_method', 'role']);
 
-        if ($request->has('password') && !empty($request->input('password'))) {
+        if (!empty($request->input('password'))) {
+            // Hanya meng-update password jika ada input password baru
             $userData['password'] = Hash::make($request->input('password'));
         }
 

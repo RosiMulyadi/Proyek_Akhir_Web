@@ -23,74 +23,80 @@
             <div class="card-body">
                 <form id="createUserForm" method="POST" action="{{ route('users.store') }}">
                     @csrf
-                    <div class="form-group">
-                        <label for="name">Nama:</label>
-                        <input type="text" name="name" id="name" class="form-control" required>
-                        <span id="name_error" class="text-danger"></span>
-                        @error('name'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="no_ktp">No. KTP:</label>
-                        <input type="text" name="no_ktp" id="no_ktp" class="form-control" required>
-                        <span id="no_ktp_error" class="text-danger"></span>
-                        @error('no_ktp'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="alamat">Alamat:</label>
-                        <input type="text" name="alamat" id="alamat" class="form-control" required>
-                        <span id="alamat_error" class="text-danger"></span>
-                        @error('alamat'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" name="email" id="email" class="form-control" required>
-                        <span id="email_error" class="text-danger"></span>
-                        @error('email'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="telepon">Telepon:</label>
-                        <input type="text" name="telepon" id="telepon" class="form-control" required>
-                        <span id="telepon_error" class="text-danger"></span>
-                        @error('telepon'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password" id="password" class="form-control" required>
-                        <span id="password_error" class="text-danger"></span>
-                        @error('password'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="jenkel">Jenis Kelamin:</label>
-                        <select name="jenkel" id="jenkel" class="form-control" required>
-                            <option value="">-- Pilih Jenis Kelamin --</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                        <span id="jenkel_error" class="text-danger"></span>
-                        @error('jenkel'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="tgl_lahir">Tanggal Lahir:</label>
-                        <input type="date" name="tgl_lahir" id="tgl_lahir" class="form-control" required>
-                        <span id="tgl_lahir_error" class="text-danger"></span>
-                        @error('tgl_lahir'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="tmpt_lahir">Tempat Lahir:</label>
-                        <input type="text" name="tmpt_lahir" id="tmpt_lahir" class="form-control" required>
-                        <span id="tmpt_lahir_error" class="text-danger"></span>
-                        @error('tmpt_lahir'){{ $message }}@enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Role:</label>
-                        <select name="role" id="role" class="form-control select2" required>
-                            <option value="">-- Pilih Role --</option>
-                            @foreach($roles as $role)
-                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach
-                        </select>
-                        <span id="role_error" class="text-danger"></span>
-                        @error('role'){{ $message }}@enderror
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Nama:</label>
+                                <input type="text" name="name" id="name" class="form-control" required>
+                                <span id="name_error" class="text-danger"></span>
+                                @error('name'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="no_ktp">No. KTP:</label>
+                                <input type="text" name="no_ktp" id="no_ktp" class="form-control" required>
+                                <span id="no_ktp_error" class="text-danger"></span>
+                                @error('no_ktp'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="alamat">Alamat:</label>
+                                <input type="text" name="alamat" id="alamat" class="form-control" required>
+                                <span id="alamat_error" class="text-danger"></span>
+                                @error('alamat'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" name="email" id="email" class="form-control" required>
+                                <span id="email_error" class="text-danger"></span>
+                                @error('email'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="telepon">Telepon:</label>
+                                <input type="text" name="telepon" id="telepon" class="form-control" required>
+                                <span id="telepon_error" class="text-danger"></span>
+                                @error('telepon'){{ $message }}@enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" name="password" id="password" class="form-control" required>
+                                <span id="password_error" class="text-danger"></span>
+                                @error('password'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="jenkel">Jenis Kelamin:</label>
+                                <select name="jenkel" id="jenkel" class="form-control" required>
+                                    <option value="">-- Pilih Jenis Kelamin --</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                                <span id="jenkel_error" class="text-danger"></span>
+                                @error('jenkel'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="tgl_lahir">Tanggal Lahir:</label>
+                                <input type="date" name="tgl_lahir" id="tgl_lahir" class="form-control" required>
+                                <span id="tgl_lahir_error" class="text-danger"></span>
+                                @error('tgl_lahir'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="tmpt_lahir">Tempat Lahir:</label>
+                                <input type="text" name="tmpt_lahir" id="tmpt_lahir" class="form-control" required>
+                                <span id="tmpt_lahir_error" class="text-danger"></span>
+                                @error('tmpt_lahir'){{ $message }}@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role:</label>
+                                <select name="role" id="role" class="form-control select2" required>
+                                    <option value="">-- Pilih Role --</option>
+                                    @foreach($roles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                                <span id="role_error" class="text-danger"></span>
+                                @error('role'){{ $message }}@enderror
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <button type="submit" id="createUserBtn" class="btn btn-primary">Create User</button>

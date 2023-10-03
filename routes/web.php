@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\{UserController, RoleController, PermissionController, StoreController};
+use App\Http\Controllers\{PenyewaController, UserController, RoleController, PermissionController, StoreController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -58,8 +58,16 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/stores', [StoreController::class, 'index'])->name('stores.index');
     Route::resource('/stores', StoreController::class);
     Route::post('/stores', 'StoreController@store')->name('stores.store');
-    Route::resource('stores', StoreController::class);
+    Route::get('/stores/{id}', 'StoreController@show')->name('stores.show');
+    Route::resource('/stores', StoreController::class);
     Route::put('/stores/{id}', 'StoreController@update')->name('stores.update');
     Route::delete('stores/{id}', 'StoreController@destroy')->name('stores.destroy');
+    Route::get('/penyewa', [PenyewaController::class, 'index'])->name('penyewa.index');
+    Route::resource('/penyewa', PenyewaController::class);
+    Route::post('/penyewa', 'PenyewaController@store')->name('penyewa.store');
+    Route::get('/penyewa/{id}', 'PenyewaController@show')->name('penyewa.show');
+    Route::resource('/penyewa', PenyewaController::class);
+    Route::put('/penyewa/{id}', 'PenyewaController@update')->name('penyewa.update');
+    Route::delete('penyewa/{id}', 'PenyewaController@destroy')->name('penyewa.destroy');
 })->middleware('web');
     

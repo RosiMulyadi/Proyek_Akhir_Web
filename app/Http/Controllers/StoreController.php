@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
-    function __construct()
-    {
-        $this->middleware('permission:list-stores|create-stores|edit-stores|delete-stores', ['only' => ['index', 'store']]);
-        $this->middleware('permission:create-stores', ['only' => ['create', 'store']]);
-        $this->middleware('permission:edit-stores', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete-stores', ['only' => ['destroy']]);
-    }
+    // function __construct()
+    // {
+    //     $this->middleware('permission:list-stores|create-stores|edit-stores|delete-stores', ['only' => ['index', 'store']]);
+    //     $this->middleware('permission:create-stores', ['only' => ['create', 'store']]);
+    //     $this->middleware('permission:edit-stores', ['only' => ['edit', 'update']]);
+    //     $this->middleware('permission:delete-stores', ['only' => ['destroy']]);
+    // }
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -29,7 +29,8 @@ class StoreController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $actionBtn = '<a href="' . route('stores.edit', $row->id) . '" class="btn btn-warning"><i class="fas fa-pen-square fa-circle mt-2"></i></a>
-                              <button class="btn btn-danger delete-btn" data-id="' . $row->id . '" onclick="deleteItem(this)"><i class="fas fa-trash"></i></button>';
+                          <a href="' . route('stores.show', $row->id) . '" class="btn btn-info"><i class="fas fa-eye"></i></a>
+                          <button class="btn btn-danger delete-btn" data-id="' . $row->id . '" onclick="deleteItem(this)"><i class="fas fa-trash"></i></button>';
                     return $actionBtn;
                 })
                 ->rawColumns(['gambar', 'action'])
@@ -38,6 +39,7 @@ class StoreController extends Controller
 
         return view('pages.stores.index'); // Pastikan view sudah sesuai dengan kebutuhan Anda
     }
+
 
     public function create()
     {

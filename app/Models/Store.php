@@ -9,6 +9,7 @@ class Store extends Model
 {
     use HasFactory;
 
+    protected $table = "stores";
     protected $primaryKey = 'id'; 
     protected $fillable = [
         'id_toko',

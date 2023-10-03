@@ -5,12 +5,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Store</h1>
+                <h1 class="m-0">Edit Stores</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Store</li>
+                    <li class="breadcrumb-item active">Stores</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -100,7 +100,7 @@
         btn.val("Loading...");
         var formData = new FormData(this);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-        $('#Id_Toko_error').text('');
+        $('#id_toko_error').text('');
         $('#gambar_error').text('');
         $('#alamat_error').text('');
         $('#luas_bangunan_error').text('');

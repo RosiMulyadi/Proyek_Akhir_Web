@@ -27,23 +27,34 @@
                         <label for="name">Role Name:</label>
                         <input type="text" name="name" id="name" class="form-control" required>
                         <span id="name_error" class="text-danger"></span>
-                        @error('name-error'){{ $message }}@enderror
                     </div>
                     <div class="form-group">
-                        <strong>Permission:</strong>
+                        <strong>Permissions:</strong>
                         <br />
                         <div class="container">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="select-all">
-                                <label class="form-check-label" for="select-all">Select All</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="select-all">
+                                        <label class="form-check-label" for="select-all">Select All</label>
+                                    </div>
+                                </div>
+                                @php $col = 4; @endphp
+                                @foreach($permission as $permission)
+                                @if ($col == 4)
+                                <div class="w-100"></div>
+                                @endif
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" value="{{ $permission->id }}" name="permission[]" type="checkbox" id="permission_{{ $permission->id }}">
+                                        <label class="form-check-label" for="permission_{{ $permission->id }}">{{ $permission->name }}</label>
+                                    </div>
+                                </div>
+                                @php $col = ($col == 1) ? 4 : $col - 1; @endphp
+                                @endforeach
                             </div>
-                            @foreach($permission as $value)
-                            <div class="form-check">
-                                <input class="form-check-input" value="{{ $value->id }}" name="permission[]" type="checkbox" id="flexSwitchCheckDefault{{ $value->id }}">
-                                <label class="form-check-label" for="flexSwitchCheckDefault{{ $value->id }}">{{ $value->name }}</label>
-                            </div>
-                            @endforeach
                         </div>
+                        <span id="permission_error" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <button type="submit" id="createRoleBtn" class="btn btn-primary">Create Role</button>
@@ -54,6 +65,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('script')
@@ -71,6 +83,7 @@
             }
         });
     });
+
     $("#createRoleForm").on('submit', function(e) {
         e.preventDefault();
         var btn = $('#createRoleBtn');
@@ -105,6 +118,9 @@
                         if (response.errors.name) {
                             $('#name_error').text(response.errors.name[0]);
                         }
+                        if (response.errors.permission) {
+                            $('#permission_error').text(response.errors.permission[0]);
+                        }
                     }
                 }
             },
@@ -116,9 +132,11 @@
                     if (errors.name) {
                         $('#name_error').text(errors.name[0]);
                     }
+                    if (errors.permission) {
+                        $('#permission_error').text(errors.permission[0]);
+                    }
                 }
             }
-
         });
         $('#name').on('input', function() {
             $('#name_error').text('');
