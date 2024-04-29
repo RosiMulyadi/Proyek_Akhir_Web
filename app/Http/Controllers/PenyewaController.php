@@ -17,20 +17,35 @@ class PenyewaController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Penyewa::all();
+            // Ambil pengguna dengan peran (role) sebagai Penyewa
+            $data = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Penyewa');
+            })->get();
+
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $actionBtn = '<a href="' . route('penyewa.edit', $row->id) . '" class="btn btn-warning"><i class="fas fa-pen-square fa-circle mt-2"></i></a>
-                      <a href="' . route('penyewa.show', $row->id) . '" class="btn btn-info"><i class="fas fa-eye"></i></a>
-                      <button class="btn btn-danger delete-btn" data-id="' . $row->id . '" onclick="deleteItem(this)"><i class="fas fa-trash"></i></button>';
-                    return $actionBtn;
+                ->addColumn('id_penyewa', function ($row) {
+                    return $row->id; // Kembalikan nilai ID langsung
                 })
-                ->rawColumns(['action'])
+                ->addColumn('no_ktp', function ($row) {
+                    return $row->no_ktp;
+                })
+                ->addColumn('name', function ($row) {
+                    return $row->name;
+                })
+                ->addColumn('alamat', function ($row) {
+                    // Kembalikan alamat sebagai string kosong jika tidak ada alamat yang tersedia
+                    return $row->alamat ?? '';
+                })
+                ->addColumn('telepon', function ($row) {
+                    // Kembalikan telepon sebagai string kosong jika tidak ada telepon yang tersedia
+                    return $row->telepon ?? '';
+                })
+                ->rawColumns(['id_penyewa']) // Tentukan kolom ini sebagai raw HTML agar hyperlink dapat ditampilkan dengan benar
                 ->toJson();
         }
 
-        return view('pages.penyewa.index'); // Pastikan view sudah sesuai dengan kebutuhan Anda
+        return view('pages.penyewa.index');
     }
 
     /**
@@ -48,21 +63,28 @@ class PenyewaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_penyewa' => 'required|string|unique:penyewa,id_penyewa',
-            'nama' => 'required|string',
-            'no_ktp' => 'required|string',
+            'name' => 'required|string|unique:users,name',
+            'no_ktp' => 'required|string|unique:users,no_ktp',
             'alamat' => 'required|string',
             'telepon' => 'required|string',
+            'user_id' => 'required|exists:users,id', // Memastikan user_id yang dipilih ada di tabel users
         ]);
 
         $user = Auth::user();
 
-        // Pastikan semua validasi telah dilakukan sebelum mencoba menyimpan data
         $penyewaData = $request->all();
-        $penyewaData['created_by'] = $user->name; // Set created_by berdasarkan nama pengguna yang terautentikasi
+        $penyewaData['created_by'] = $user->name;
 
-        // Simpan data ke dalam database
-        $penyewa = Penyewa::create($penyewaData);
+        // Membuat user baru dengan informasi penyewa
+        $newUser = User::create([
+            'name' => $request->name,
+            'no_ktp' => $request->no_ktp,
+            'alamat' => $request->alamat,
+            'telepon' => $request->telepon,
+        ]);
+
+        // Mengaitkan user baru dengan user_id yang diberikan
+        $newUser->update(['user_id' => $request->user_id]);
 
         return response()->json(['success' => true, 'message' => 'Penyewa created successfully']);
     }

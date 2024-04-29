@@ -45,14 +45,22 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item{{ request()->is('penyewa*') ? ' menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('penyewa*')? 'active' : '' }}">
+                <li class="nav-item{{ request()->is('pemilik*') || request()->is('penyewa*') ? ' menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('pemilik*') || request()->is('penyewa*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
                             Owner
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('pemilik.index') }}" class="nav-link {{ request()->is('pemilik*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pemilik</p>
+                            </a>
+                        </li>
+                    </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('penyewa.index') }}" class="nav-link {{ request()->is('penyewa*') ? 'active' : '' }}">

@@ -25,9 +25,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <!-- <div class="card-header">
                         <a href="{{ route('penyewa.create') }}" class="btn btn-sm btn-primary">Tambah</a>
-                    </div>
+                    </div> -->
                     @if ($message = Session::get('success'))
                     <div class="alert alert-success">
                         <p>{{ $message }}</p>
@@ -45,7 +45,6 @@
                                         <th>No KTP</th>
                                         <th>Alamat</th>
                                         <th>Telepon</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -80,29 +79,26 @@
                     className: 'align-middle'
                 },
                 {
-                    data: 'nama',
-                    className: 'align-middle'
-                },
+                    data: 'name',
+                    name: 'name'
+                }, // Kolom name
                 {
                     data: 'no_ktp',
-                    className: 'align-middle'
-                },
+                    name: 'no_ktp'
+                }, // Kolom no_ktp
                 {
                     data: 'alamat',
-                    className: 'align-middle'
-                },
+                    name: 'alamat'
+                }, // Kolom alamat
                 {
                     data: 'telepon',
-                    className: 'align-middle'
-                },
-                {
-                    data: 'action',
-                    className: 'align-middle text-center'
-                }
+                    name: 'telepon'
+                }, // Kolom telepon
             ],
             // Rest of the DataTables settings
         });
     });
+
     function deleteItem(button) {
         var id = $(button).data('id');
         var name = $(button).data('nama');

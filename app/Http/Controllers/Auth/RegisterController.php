@@ -10,25 +10,23 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
+
+    protected $redirectTo = '/login';
+
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
 
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        $roles = Role::all();
+        return view('auth.register', compact('roles'));
     }
 
     public function postregister(Request $request)
@@ -39,73 +37,68 @@ class RegisterController extends Controller
             'password' => [
                 'required',
                 'string',
-                'min:8', // Minimal 8 karakter
-                'confirmed', // Harus cocok dengan konfirmasi password
+                'min:8',
+                'confirmed',
                 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
-                // Harus memiliki setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter khusus
             ],
+            'no_ktp' => ['nullable', 'string', 'max:255'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'telepon' => ['nullable', 'string', 'max:255'],
+            'jenis_kelamin' => ['required', 'string'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'tempat_lahir' => ['nullable', 'string', 'max:255'],
         ]);
 
-        // Membuat pengguna baru dan mengisi kolom 'created_by' dengan 'system'
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'no_ktp' => $request->no_ktp,
+            'alamat' => $request->alamat,
+            'telepon' => $request->telepon,
+            'jenkel' => $request->jenis_kelamin,
+            'tgl_lahir' => $request->tanggal_lahir,
+            'tmpt_lahir' => $request->tempat_lahir,
             'created_by' => 'system',
         ]);
 
-        // Melakukan login pengguna yang baru dibuat
-        Auth::login($user);
+        Auth::login($user); // Melakukan login pengguna yang baru dibuat
 
-        // Redirect ke halaman yang sesuai (misalnya, halaman beranda)
-        return redirect('/home');
+        return redirect('/login'); // Mengarahkan ke halaman login setelah registrasi
     }
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = RouteServiceProvider::HOME;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
-
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'no_ktp' => ['nullable', 'string', 'max:255'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'telepon' => ['nullable', 'string', 'max:255'],
+            'jenis_kelamin' => ['required', 'string'], // Sesuai dengan model User: 'jenkel'
+            'tanggal_lahir' => ['nullable', 'date'], // Sesuai dengan model User: 'tgl_lahir'
+            'tempat_lahir' => ['nullable', 'string', 'max:255'], // Sesuai dengan model User: 'tmpt_lahir'
+            // 'role' => ['required', 'string', 'in:Admin,Pemilik,Penyewa'], // Menambahkan validasi untuk role
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
     protected function create(array $data)
     {
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'no_ktp' => $data['no_ktp'],
+            'alamat' => $data['alamat'],
+            'telepon' => $data['telepon'],
+            'jenkel' => $data['jenis_kelamin'], // Sesuai dengan model User: 'jenkel'
+            'tgl_lahir' => $data['tanggal_lahir'], // Sesuai dengan model User: 'tgl_lahir'
+            'tmpt_lahir' => $data['tempat_lahir'], // Sesuai dengan model User: 'tmpt_lahir'
+            // 'role' => $data['role'], // Menyimpan role pengguna
         ]);
+
+        // Mengasosiasikan role pengguna sesuai dengan yang dipilih
         $user->assignRole('Admin');
 
         return $user;

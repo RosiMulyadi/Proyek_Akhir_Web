@@ -24,6 +24,21 @@
                 <form id="createCompanyForm" method="POST" action="{{ route('stores.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
+                        <label for="id_pemilik">Id Pemilik:</label>
+                        <select name="id_pemilik" class="form-control" required>
+                            <option value="">Pilih Id Pemilik</option>
+                            @foreach($pemilik as $p)
+                            @php
+                            $userRoute = route('users.show', $p->id);
+                            @endphp
+                            <option value="{{ $p->id }}" data-url="{{ $userRoute }}">
+                                {{ $p->id }} - {{ $p->user ? $p->user->name : 'Unknown' }} ({{ $p->user ? $p->user->email : 'Unknown' }})
+                            </option>
+                            @endforeach
+                        </select>
+                        <span class="text-danger" id="id_pemilik_error"></span>
+                    </div>
+                    <div class="form-group">
                         <label for="id_toko">Id Toko:</label>
                         <input type="text" name="id_toko" class="form-control" required>
                         <span class="text-danger" id="id_toko_error"></span>
@@ -78,7 +93,13 @@
 
 @section('script')
 <script type="application/javascript">
-     $("#gambarInput").on('change', function(e) {
+    $('select[name="id_pemilik"]').on('change', function() {
+        var selectedOption = $(this).find('option:selected');
+        var url = selectedOption.data('url');
+        console.log('URL to Pemilik:', url);
+        // Lakukan tindakan tertentu dengan URL, misalnya simpan ke dalam variabel atau lakukan pengiriman AJAX
+    });
+    $("#gambarInput").on('change', function(e) {
         var gambarInput = e.target;
         if (gambarInput.files && gambarInput.files[0]) {
             var reader = new FileReader();
@@ -97,6 +118,7 @@
         btn.attr('disabled', true);
         btn.val("Loading...");
         let formData = new FormData(this);
+        $('#id_pemilik_error').text('');
         $('#id_toko_error').text('');
         $('#gambar_error').text('');
         $('#alamat_error').text('');
@@ -137,6 +159,7 @@
                     confirmButtonText: 'OK'
                 });
 
+                $('#id_pemilik_error').text(response.responseJSON.errors.id_pemilik);
                 $('#id_toko_error').text(response.responseJSON.errors.id_toko);
                 $('#gambar_error').text(response.responseJSON.errors.gambar);
                 $('#alamat_error').text(response.responseJSON.errors.alamat);

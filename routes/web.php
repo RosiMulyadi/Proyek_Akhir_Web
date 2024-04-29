@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\{PenyewaController, UserController, RoleController, PermissionController, StoreController};
+use App\Http\Controllers\{PemilikController, PenyewaController, UserController, RoleController, PermissionController, StoreController};
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,5 +69,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/penyewa', PenyewaController::class);
     Route::put('/penyewa/{id}', 'PenyewaController@update')->name('penyewa.update');
     Route::delete('penyewa/{id}', 'PenyewaController@destroy')->name('penyewa.destroy');
+    Route::get('/pemilik', [PemilikController::class, 'index'])->name('pemilik.index');
+    Route::resource('/pemilik', PemilikController::class);
+    Route::post('/pemilik', 'PemilikController@store')->name('pemilik.store');
+    Route::get('/pemilik/{id}', 'PemilikController@show')->name('pemilik.show');
+    Route::resource('/pemilik', PemilikController::class);
+    Route::put('/pemilik/{id}', 'PemilikController@update')->name('pemilik.update');
+    Route::delete('pemilik/{id}', 'PemilikController@destroy')->name('pemilik.destroy');
 })->middleware('web');
     

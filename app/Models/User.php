@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $primaryKey = 'id'; 
+    protected $primaryKey = 'id';
     protected $fillable = [
         'name',
         'no_ktp',
@@ -29,10 +29,9 @@ class User extends Authenticatable
         'jenkel',
         'tgl_lahir',
         'tmpt_lahir',
-        'created_by',
+        'created_by', // Tambahkan created_by di sini
         'updated_by',
     ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -56,5 +55,15 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id'); // Gunakan 'role_id' sebagai foreign key
+    }
+
+    public function pemilik()
+    {
+        return $this->hasMany(Pemilik::class, 'name', 'alamat', 'telepon');
+    }
+
+    public function penyewa()
+    {
+        return $this->hasMany(Penyewa::class, 'no_ktp', 'name', 'alamat', 'telepon');
     }
 }

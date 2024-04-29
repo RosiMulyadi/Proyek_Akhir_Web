@@ -5,12 +5,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Penyewa</h1>
+                <h1 class="m-0">Edit Pemilik</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Penyewa</li>
+                    <li class="breadcrumb-item active">Pemilik</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -20,37 +20,32 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <form id="editPenyewaForm" method="POST" action="{{ route('penyewa.update', $penyewa->id) }}" enctype="multipart/form-data">
+                <form id="editPemilikForm" method="POST" action="{{ route('pemilik.update', $pemilik->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="form-group">
-                        <label for="id_penyewa">Id Penyewa:</label>
-                        <input type="text" name="id_penyewa" class="form-control" value="{{ $penyewa->id_penyewa }}" readonly>
-                        <span class="text-danger" id="id_penyewa_error"></span>
+                        <label for="id_pemilik">Id Pemilik:</label>
+                        <input type="text" name="id_pemilik" class="form-control" value="{{ $pemilik->id_pemilik }}" required>
+                        <span class="text-danger" id="id_pemilik_error"></span>
                     </div>
                     <div class="form-group">
                         <label for="name">Nama:</label>
-                        <input type="text" name="name" class="form-control" value="{{ $penyewa->name }}" required>
+                        <input type="text" name="name" class="form-control" value="{{ $pemilik->name }}" required>
                         <span class="text-danger" id="name_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="no_ktp">No. KTP:</label>
-                        <input type="text" name="no_ktp" class="form-control" value="{{ $penyewa->no_ktp }}" required>
-                        <span class="text-danger" id="no_ktp_error"></span>
-                    </div>
-                    <div class="form-group">
                         <label for="alamat">Alamat:</label>
-                        <input type="text" name="alamat" class="form-control" value="{{ $penyewa->alamat }}" required>
+                        <input type="text" name="alamat" class="form-control" value="{{ $pemilik->alamat }}" required>
                         <span class="text-danger" id="alamat_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="telepon">Telepon:</label>
-                        <input type="text" name="telepon" class="form-control" value="{{ $penyewa->telepon }}" required>
+                        <label for="telepon">No. Hp:</label>
+                        <input type="text" name="telepon" class="form-control" value="{{ $pemilik->telepon }}" required>
                         <span class="text-danger" id="telepon_error"></span>
                     </div>
                     <div class="form-group">
-                        <button type="submit" id="editPenyewaBtn" class="btn btn-primary">Update Penyewa</button>
-                        <a href="{{ route('penyewa.index') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" id="editPemilikBtn" class="btn btn-primary">Update Pemilik</button>
+                        <a href="{{ route('pemilik.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
                 @if ($errors->any())
@@ -70,16 +65,15 @@
 
 @section('script')
 <script type="application/javascript">
-    $("#editPenyewaForm").on('submit', function(e) {
+    $("#editPemilikForm").on('submit', function(e) {
         e.preventDefault();
-        var btn = $('#editPenyewaBtn');
+        var btn = $('#editPemilikBtn');
         btn.attr('disabled', true);
         btn.val("Loading...");
         var formData = new FormData(this);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-        $('#id_penyewa_error').text('');
+        $('#id_pemilik_error').text('');
         $('#name_error').text('');
-        $('#no_ktp_error').text('');
         $('#alamat_error').text('');
         $('#telepon_error').text('');
 
@@ -94,12 +88,12 @@
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Penyewa Updated',
-                        text: 'Penyewa Berhasil Diupdate.',
+                        title: 'Pemilik Updated',
+                        text: 'Pemilik Berhasil Diupdate.',
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
-                        window.location.href = "{{ route('penyewa.index') }}";
+                        window.location.href = "{{ route('pemilik.index') }}";
                     });
                 } else {
                     if (response.errors) {
@@ -109,25 +103,25 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Update Failed',
-                        text: 'An error occurred while updating the penyewa.',
+                        text: 'An error occurred while updating the pemilik.',
                         confirmButtonText: 'OK'
                     });
                 }
 
                 btn.attr('disabled', false);
-                btn.val("Update Penyewa");
+                btn.val("Update Pemilik");
             },
             error: function(xhr, status, error) {
                 // Handle error cases
                 Swal.fire({
                     icon: 'error',
                     title: 'Update Failed',
-                    text: 'An error occurred while updating the penyewa.',
+                    text: 'An error occurred while updating the pemilik.',
                     confirmButtonText: 'OK'
                 });
 
                 btn.attr('disabled', false);
-                btn.val("Update Penyewa");
+                btn.val("Update Pemilik");
             }
         });
     });

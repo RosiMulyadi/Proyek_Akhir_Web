@@ -12,6 +12,7 @@ class Store extends Model
     protected $table = "stores";
     protected $primaryKey = 'id'; 
     protected $fillable = [
+        'id_pemilik',
         'id_toko',
         'gambar',
         'alamat',
@@ -20,5 +21,10 @@ class Store extends Model
         'harga',
         'created_by',
         'updated_by'
-    ];    
+    ]; 
+    
+    public function pemilik()
+    {
+        return $this->belongsTo(Pemilik::class, 'user_id', 'id_pemilik');
+    }
 }

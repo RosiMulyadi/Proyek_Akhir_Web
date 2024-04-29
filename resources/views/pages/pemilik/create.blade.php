@@ -5,12 +5,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Create Penyewa</h1>
+                <h1 class="m-0">Create Pemilik</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Penyewa</li>
+                    <li class="breadcrumb-item active">Pemilik</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -21,12 +21,12 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <form id="createPenyewaForm" method="POST" action="{{ route('penyewa.store') }}">
+                <form id="createPemilikForm" method="POST" action="{{ route('pemilik.store') }}">
                     @csrf
                     <div class="form-group">
-                        <label for="id_penyewa">Id Penyewa:</label>
-                        <input type="text" name="id_penyewa" class="form-control" required>
-                        <span class="text-danger" id="id_penyewa_error"></span>
+                        <label for="id_pemilik">Id Pemilik:</label>
+                        <input type="text" name="id_pemilik" class="form-control" required>
+                        <span class="text-danger" id="id_pemilik_error"></span>
                     </div>
                     <div class="form-group">
                         <label for="name">Nama:</label>
@@ -34,23 +34,18 @@
                         <span class="text-danger" id="name_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="no_ktp">No KTP:</label>
-                        <input type="text" name="no_ktp" class="form-control" required>
-                        <span class="text-danger" id="no_ktp_error"></span>
-                    </div>
-                    <div class="form-group">
                         <label for="alamat">Alamat:</label>
                         <input type="text" name="alamat" class="form-control" required>
                         <span class="text-danger" id="alamat_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="telepon">Telepon:</label>
+                        <label for="telepon">No HP:</label>
                         <input type="text" name="telepon" class="form-control" required>
                         <span class="text-danger" id="telepon_error"></span>
                     </div>
                     <div class="form-group">
-                        <button type="submit" id="createPenyewaBtn" class="btn btn-primary">Create Penyewa</button>
-                        <a href="{{ route('penyewa.index') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" id="createPemilikBtn" class="btn btn-primary">Create Pemilik</button>
+                        <a href="{{ route('pemilik.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
                 @if ($errors->any())
@@ -70,20 +65,19 @@
 
 @section('script')
 <script type="application/javascript">
-    $("#createPenyewaForm").on('submit', function(e) {
+    $("#createPemilikForm").on('submit', function(e) {
         e.preventDefault();
-        var btn = $('#createPenyewaBtn');
+        var btn = $('#createPemilikBtn');
         btn.attr('disabled', true);
         btn.val("Loading...");
         let formData = new FormData(this);
-        $('#id_penyewa_error').text('');
+        $('#id_pemilik_error').text('');
         $('#name_error').text('');
-        $('#no_ktp_error').text('');
         $('#alamat_error').text('');
         $('#telepon_error').text('');
 
         $.ajax({
-            url: "{{ route('penyewa.store') }}",
+            url: "{{ route('pemilik.store') }}",
             type: "POST",
             data: formData,
             cache: false,
@@ -94,12 +88,12 @@
                     sessionStorage.setItem('success', response.message);
                     Swal.fire({
                         icon: 'success',
-                        title: 'Penyewa Created',
+                        title: 'Pemilik Created',
                         text: response.message,
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
-                        window.location.href = "{{ route('penyewa.index') }}";
+                        window.location.href = "{{ route('pemilik.index') }}";
                     });
                 }
             },
@@ -110,13 +104,12 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'An error occurred while creating the penyewa.',
+                    text: 'An error occurred while creating the pemilik.',
                     confirmButtonText: 'OK'
                 });
 
-                $('#id_penyewa_error').text(response.responseJSON.errors.id_penyewa);
+                $('#id_pemilik_error').text(response.responseJSON.errors.id_pemilik);
                 $('#name_error').text(response.responseJSON.errors.name);
-                $('#no_ktp_error').text(response.responseJSON.errors.no_ktp);
                 $('#alamat_error').text(response.responseJSON.errors.alamat);
                 $('#telepon_error').text(response.responseJSON.errors.telepon);
             }
