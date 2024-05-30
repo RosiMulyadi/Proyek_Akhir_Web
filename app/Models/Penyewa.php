@@ -23,7 +23,7 @@ class Penyewa extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'no_ktp', 'name', 'alamat', 'telepon');
+        return $this->belongsTo(User::class, 'id_penyewa', 'id');
     }
 
     public function createdByUser()

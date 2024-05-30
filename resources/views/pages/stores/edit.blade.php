@@ -5,17 +5,18 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Stores</h1>
-            </div><!-- /.col -->
+                <h1 class="m-0">Edit Store</h1>
+            </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item active">Stores</li>
                 </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
+            </div>
+        </div>
+    </div>
 </div>
+
 <div class="content">
     <div class="col-md-12">
         <div class="card">
@@ -24,18 +25,29 @@
                     @csrf
                     @method('PUT')
                     <div class="form-group">
+                        <label for="id_pemilik">ID Pemilik:</label>
+                        <select name="id_pemilik" id="id_pemilik" class="form-control select2" required>
+                            <option value="">-- Select Pemilik --</option>
+                            @foreach($pemilik as $pem)
+                            <option value="{{ $pem->id_pemilik }}" @if($pem->id_pemilik == $store->id_pemilik) selected @endif>{{ $pem->id_pemilik }} - {{ $pem->name }}</option>
+                            @endforeach
+                        </select>
+                        <span id="id_pemilik_error" class="text-danger"></span>
+                        @error('id_pemilik'){{ $message }}@enderror
+                    </div>
+                    <div class="form-group">
                         <label for="id_toko">Id Toko:</label>
                         <input type="text" name="id_toko" class="form-control" value="{{ $store->id_toko }}" required>
                         <span class="text-danger" id="id_toko_error"></span>
                     </div>
                     <div class="form-group">
                         <label for="gambar">Gambar:</label>
-                        <input type="file" id="gambarInput" name="gambar" class="form-control-file">
+                        <input type="file" name="gambar" class="form-control-file" id="gambarInput">
                         <span class="text-danger" id="gambar_error"></span>
-                        @if($store->gambar)
-                        <div class="mt-2">
-                            <img id="gambarPreview" src="{{ asset('storage/' . $store->gambar) }}" alt="Gambar" style="max-width: 200px;">
-                        </div>
+                        @if ($store->gambar)
+                        <img src="{{ asset('storage/' . $store->gambar) }}" alt="Gambar Preview" style="max-height: 200px;">
+                        @else
+                        <span>No Image Available</span>
                         @endif
                     </div>
                     <div class="form-group">
@@ -49,9 +61,8 @@
                         <span class="text-danger" id="luas_bangunan_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="cluster">Cluster:</label>
-                        <input type="text" name="cluster" class="form-control" value="{{ $store->cluster }}" required>
-                        <span class="text-danger" id="cluster_error"></span>
+                        <label for="map">Cluster:</label>
+                        <div id="map" style="height: 300px;"></div>
                     </div>
                     <div class="form-group">
                         <label for="harga">Harga:</label>
@@ -80,79 +91,94 @@
 
 @section('script')
 <script type="application/javascript">
-    $("#gambarInput").on('change', function(e) {
-        var gambarInput = e.target;
-        if (gambarInput.files && gambarInput.files[0]) {
-            var reader = new FileReader();
+    $(document).ready(function() {
+        $('.select2').select2();
 
-            reader.onload = function(e) {
-                $('#gambarPreview').attr('src', e.target.result);
-                $('#gambarPreview').css('display', 'block');
+        // Initialize the map
+        var map = L.map('map').setView([-7.0, 113.9], 10); // Pusatkan peta ke Kabupaten Sumenep
+        var marker;
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+
+        // Add search bar control
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false
+        }).on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+            map.setView(latlng, 13);
+            if (marker) {
+                marker.setLatLng(latlng).update();
+            } else {
+                marker = L.marker(latlng).addTo(map);
             }
+        }).addTo(map);
 
-            reader.readAsDataURL(gambarInput.files[0]);
-        }
-    });
-    $("#editStoreForm").on('submit', function(e) {
-        e.preventDefault();
-        var btn = $('#editStoreBtn');
-        btn.attr('disabled', true);
-        btn.val("Loading...");
-        var formData = new FormData(this);
-        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-        $('#id_toko_error').text('');
-        $('#gambar_error').text('');
-        $('#alamat_error').text('');
-        $('#luas_bangunan_error').text('');
-        $('#cluster_error').text('');
-        $('#harga_error').text('');
+        // Add attribution control with geocoder link
+        L.control.attribution({
+            prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Search powered by <a href="https://nominatim.openstreetmap.org" target="_blank">Nominatim</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-        $.ajax({
-            url: $(this).attr('action'),
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Store Updated',
-                        text: 'Store Berhasil Diupdate.',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function() {
-                        window.location.href = "{{ route('stores.index') }}";
-                    });
-                } else {
-                    if (response.errors) {
-                        // Handle error fields
-                        // ...
+        // Image preview
+        $("#gambarInput").on('change', function(e) {
+            var gambarInput = e.target;
+            if (gambarInput.files && gambarInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#gambarPreview').attr('src', e.target.result);
+                    $('#gambarPreview').css('display', 'block');
+                }
+                reader.readAsDataURL(gambarInput.files[0]);
+            }
+        });
+
+        // Form submission with AJAX
+        $("#editStoreForm").on('submit', function(e) {
+            e.preventDefault();
+            var btn = $('#editStoreBtn');
+            btn.attr('disabled', true).text("Loading...");
+            let formData = new FormData(this);
+            $.ajax({
+                url: "{{ route('stores.update', $store->id) }}",
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Store Updated',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function() {
+                            window.location.href = "{{ route('stores.index') }}";
+                        });
                     }
+                },
+                error: function(response) {
+                    btn.attr('disabled', false).text("Update Store");
                     Swal.fire({
                         icon: 'error',
-                        title: 'Update Failed',
+                        title: 'Error',
                         text: 'An error occurred while updating the store.',
                         confirmButtonText: 'OK'
                     });
+                    if (response.responseJSON.errors) {
+                        $('#id_pemilik_error').text(response.responseJSON.errors.id_pemilik);
+                        $('#id_toko_error').text(response.responseJSON.errors.id_toko);
+                        $('#gambar_error').text(response.responseJSON.errors.gambar);
+                        $('#alamat_error').text(response.responseJSON.errors.alamat);
+                        $('#luas_bangunan_error').text(response.responseJSON.errors.luas_bangunan);
+                        $('#harga_error').text(response.responseJSON.errors.harga);
+                    }
                 }
-
-                btn.attr('disabled', false);
-                btn.val("Update Store");
-            },
-            error: function(xhr, status, error) {
-                // Handle error cases
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Update Failed',
-                    text: 'An error occurred while updating the store.',
-                    confirmButtonText: 'OK'
-                });
-
-                btn.attr('disabled', false);
-                btn.val("Update Store");
-            }
+            });
         });
     });
 </script>

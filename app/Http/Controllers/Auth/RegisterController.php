@@ -64,7 +64,7 @@ class RegisterController extends Controller
 
         Auth::login($user); // Melakukan login pengguna yang baru dibuat
 
-        return redirect('/login'); // Mengarahkan ke halaman login setelah registrasi
+        return redirect('/home'); // Mengarahkan ke halaman login setelah registrasi
     }
 
     protected function validator(array $data)

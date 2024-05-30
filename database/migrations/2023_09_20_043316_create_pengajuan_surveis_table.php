@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('pengajuan_survei', function (Blueprint $table) {
             $table->id();
+            $table->string('id_penyewa');
+            $table->string('nama_penyewa');
+            $table->string('no_ktp');
+            $table->date('tanggal_survei');
+            $table->string('waktu');
+            $table->string('keterangan');
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->timestamps();
         });
     }

@@ -70,6 +70,23 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item{{ request()->is('survei*') ? ' menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('survei*')? 'active' : '' }}">
+                        <i class="nav-icon fas fa-store"></i>
+                        <p>
+                            Survei
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('survei.index') }}" class="nav-link {{ request()->is('survei*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pengajuan Survei</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item{{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? ' menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>

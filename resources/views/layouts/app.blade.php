@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin Panel</title>
 
@@ -43,12 +42,26 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <!-- Jika belum dimasukkan -->
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.11.0/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.0/js/jquery.dataTables.min.js"></script> -->
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tambahkan Leaflet CSS dan JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Tambahkan Leaflet Control Geocoder CSS dan JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 
 </head>
 
@@ -81,7 +94,7 @@
         <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
-    
+
     <!-- jQuery -->
     <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
     <!-- jQuery UI 1.11.4 -->
@@ -117,7 +130,7 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{ asset('assets/dist/js/pages/dashboard.js') }}"></script>
     <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
-    
+
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -134,6 +147,7 @@
     <!-- <script src="https://cdn.datatables.net/v/bs4/dt-1.13.5/datatables.min.js"></script> -->
 
     @yield('script')
+
     <script type="text/javascript">
         $(document).ready(function() {
             if (sessionStorage.getItem('success')) {
@@ -173,7 +187,7 @@
 
                 sessionStorage.clear();
             }
-        })
+        });
     </script>
 </body>
 

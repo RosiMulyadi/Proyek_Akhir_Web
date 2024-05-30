@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\{PemilikController, PenyewaController, UserController, RoleController, PermissionController, StoreController};
+use App\Http\Controllers\{PemilikController, PenyewaController, UserController, RoleController, PermissionController, StoreController, PengajuanSurveiController};
+use App\Models\PengajuanSurvei;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,6 +64,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/stores', StoreController::class);
     Route::put('/stores/{id}', 'StoreController@update')->name('stores.update');
     Route::delete('stores/{id}', 'StoreController@destroy')->name('stores.destroy');
+    Route::get('/getClusterCoordinates', [StoreController::class, 'getClusterCoordinates'])->name('getClusterCoordinates');
     Route::get('/penyewa', [PenyewaController::class, 'index'])->name('penyewa.index');
     Route::resource('/penyewa', PenyewaController::class);
     Route::post('/penyewa', 'PenyewaController@store')->name('penyewa.store');
@@ -76,5 +79,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/pemilik', PemilikController::class);
     Route::put('/pemilik/{id}', 'PemilikController@update')->name('pemilik.update');
     Route::delete('pemilik/{id}', 'PemilikController@destroy')->name('pemilik.destroy');
+    Route::get('/survei', [PengajuanSurveiController::class, 'index'])->name('survei.index');
+    Route::resource('/survei', PengajuanSurveiController::class);
+    Route::post('/survei', 'PengajuanSurveiController@store')->name('survei.store');
+    Route::get('/survei/{id}', 'PengajuanSurveiController@show')->name('survei.show');
+    Route::resource('/survei', PengajuanSurveiController::class);
+    Route::put('/survei/{id}', [PengajuanSurveiController::class, 'update'])->name('survei.update');
+    Route::delete('/survei/{id}', [PengajuanSurveiController::class, 'destroy'])->name('survei.destroy');
 })->middleware('web');
-    

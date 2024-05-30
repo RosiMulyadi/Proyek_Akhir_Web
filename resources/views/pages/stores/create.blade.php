@@ -5,38 +5,34 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Create Stores</h1>
-            </div><!-- /.col -->
+                <h1 class="m-0">Create Store</h1>
+            </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item active">Stores</li>
                 </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="content">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <form id="createCompanyForm" method="POST" action="{{ route('stores.store') }}" enctype="multipart/form-data">
+                <form id="createStoreForm" method="POST" action="{{ route('stores.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="id_pemilik">Id Pemilik:</label>
-                        <select name="id_pemilik" class="form-control" required>
-                            <option value="">Pilih Id Pemilik</option>
-                            @foreach($pemilik as $p)
-                            @php
-                            $userRoute = route('users.show', $p->id);
-                            @endphp
-                            <option value="{{ $p->id }}" data-url="{{ $userRoute }}">
-                                {{ $p->id }} - {{ $p->user ? $p->user->name : 'Unknown' }} ({{ $p->user ? $p->user->email : 'Unknown' }})
-                            </option>
+                        <label for="id_pemilik">ID Pemilik:</label>
+                        <select name="id_pemilik" id="id_pemilik" class="form-control select2" required>
+                            <option value="">-- Select Pemilik --</option>
+                            @foreach($pemilik as $pem)
+                            <option value="{{ $pem->id_pemilik }}">{{ $pem->id_pemilik }} - {{ $pem->name }}</option>
                             @endforeach
                         </select>
-                        <span class="text-danger" id="id_pemilik_error"></span>
+                        <span id="id_pemilik_error" class="text-danger"></span>
+                        @error('id_pemilik'){{ $message }}@enderror
                     </div>
                     <div class="form-group">
                         <label for="id_toko">Id Toko:</label>
@@ -62,9 +58,8 @@
                         <span class="text-danger" id="luas_bangunan_error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="cluster">Cluster:</label>
-                        <input type="text" name="cluster" class="form-control" required>
-                        <span class="text-danger" id="cluster_error"></span>
+                        <label for="map">Cluster:</label>
+                        <div id="map" style="height: 300px;"></div>
                     </div>
                     <div class="form-group">
                         <label for="harga">Harga:</label>
@@ -72,7 +67,7 @@
                         <span class="text-danger" id="harga_error"></span>
                     </div>
                     <div class="form-group">
-                        <button type="submit" id="createCompanyBtn" class="btn btn-primary">Create Store</button>
+                        <button type="submit" id="createStoreBtn" class="btn btn-primary">Create Store</button>
                         <a href="{{ route('stores.index') }}" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
@@ -93,80 +88,94 @@
 
 @section('script')
 <script type="application/javascript">
-    $('select[name="id_pemilik"]').on('change', function() {
-        var selectedOption = $(this).find('option:selected');
-        var url = selectedOption.data('url');
-        console.log('URL to Pemilik:', url);
-        // Lakukan tindakan tertentu dengan URL, misalnya simpan ke dalam variabel atau lakukan pengiriman AJAX
-    });
-    $("#gambarInput").on('change', function(e) {
-        var gambarInput = e.target;
-        if (gambarInput.files && gambarInput.files[0]) {
-            var reader = new FileReader();
+    $(document).ready(function() {
+        $('.select2').select2();
 
-            reader.onload = function(e) {
-                $('#gambarPreview').attr('src', e.target.result);
-                $('#gambarPreview').css('display', 'block');
+        // Initialize the map
+        var map = L.map('map').setView([-7.0, 113.9], 10); // Pusatkan peta ke Kabupaten Sumenep
+        var marker;
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+
+        // Add search bar control
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false
+        }).on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+            map.setView(latlng, 13);
+            if (marker) {
+                marker.setLatLng(latlng).update();
+            } else {
+                marker = L.marker(latlng).addTo(map);
             }
+        }).addTo(map);
 
-            reader.readAsDataURL(gambarInput.files[0]);
-        }
-    });
-    $("#createCompanyForm").on('submit', function(e) {
-        e.preventDefault();
-        var btn = $('#createCompanyBtn');
-        btn.attr('disabled', true);
-        btn.val("Loading...");
-        let formData = new FormData(this);
-        $('#id_pemilik_error').text('');
-        $('#id_toko_error').text('');
-        $('#gambar_error').text('');
-        $('#alamat_error').text('');
-        $('#luas_bangunan_error').text('');
-        $('#cluster_error').text('');
-        $('#harga_error').text('');
+        // Add attribution control with geocoder link
+        L.control.attribution({
+            prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Search powered by <a href="https://nominatim.openstreetmap.org" target="_blank">Nominatim</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-        $.ajax({
-            url: "{{ route('stores.store') }}",
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $(".preloader").fadeOut();
-                if (response.success) {
-                    sessionStorage.setItem('success', response.message);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Store Created',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function() {
-                        window.location.href = "{{ route('stores.index') }}";
-                    });
+        // Image preview
+        $("#gambarInput").on('change', function(e) {
+            var gambarInput = e.target;
+            if (gambarInput.files && gambarInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#gambarPreview').attr('src', e.target.result);
+                    $('#gambarPreview').css('display', 'block');
                 }
-            },
-            error: function(response) {
-                btn.attr('disabled', false);
-                btn.val("Simpan");
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while creating the store.',
-                    confirmButtonText: 'OK'
-                });
-
-                $('#id_pemilik_error').text(response.responseJSON.errors.id_pemilik);
-                $('#id_toko_error').text(response.responseJSON.errors.id_toko);
-                $('#gambar_error').text(response.responseJSON.errors.gambar);
-                $('#alamat_error').text(response.responseJSON.errors.alamat);
-                $('#luas_bangunan_error').text(response.responseJSON.errors.luas_bangunan);
-                $('#cluster_error').text(response.responseJSON.errors.cluster);
-                $('#harga_error').text(response.responseJSON.errors.harga);
+                reader.readAsDataURL(gambarInput.files[0]);
             }
+        });
+
+        // Form submission with AJAX
+        $("#createStoreForm").on('submit', function(e) {
+            e.preventDefault();
+            var btn = $('#createStoreBtn');
+            btn.attr('disabled', true).text("Loading...");
+            let formData = new FormData(this);
+            $.ajax({
+                url: "{{ route('stores.store') }}",
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Store Created',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function() {
+                            window.location.href = "{{ route('stores.index') }}";
+                        });
+                    }
+                },
+                error: function(response) {
+                    btn.attr('disabled', false).text("Create Store");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while creating the store.',
+                        confirmButtonText: 'OK'
+                    });
+                    if (response.responseJSON.errors) {
+                        $('#id_pemilik_error').text(response.responseJSON.errors.id_pemilik);
+                        $('#id_toko_error').text(response.responseJSON.errors.id_toko);
+                        $('#gambar_error').text(response.responseJSON.errors.gambar);
+                        $('#alamat_error').text(response.responseJSON.errors.alamat);
+                        $('#luas_bangunan_error').text(response.responseJSON.errors.luas_bangunan);
+                        $('#harga_error').text(response.responseJSON.errors.harga);
+                    }
+                }
+            });
         });
     });
 </script>

@@ -6,12 +6,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Stores</h1>
+                <h1 class="m-0">Pengajuan Survei</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Stores</li>
+                    <li class="breadcrumb-item active">Pengajuan Survei</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -25,9 +25,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <a href="{{ route('stores.create') }}" class="btn btn-sm btn-primary">Tambah</a>
-                    </div>
                     @if ($message = Session::get('success'))
                     <div class="alert alert-success">
                         <p>{{ $message }}</p>
@@ -36,17 +33,16 @@
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="table-stores" style="width: 100%" class="table table-bordered table-hover">
+                            <table id="table-survey" style="width: 100%" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Id Pemilik</th>
-                                        <th>Id Toko</th>
-                                        <th>Gambar</th>
-                                        <th>Alamat</th>
-                                        <th>Luas Bangunan</th>
-                                        <th>Cluster</th>
-                                        <th>Harga</th>
+                                        <th>Id Penyewa</th>
+                                        <th>Nama Penyewa</th>
+                                        <th>No KTP</th>
+                                        <th>Tanggal Survei</th>
+                                        <th>Waktu</th>
+                                        <th>Keterangan</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -66,11 +62,11 @@
 @section('script')
 <script type="application/javascript">
     $(document).ready(function() {
-        $('#table-stores').DataTable({
+        $('#table-survey').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('stores.index') }}",
+                url: "{{ route('survei.index') }}",
                 type: 'GET',
             },
             columns: [{
@@ -80,38 +76,28 @@
                     orderable: false,
                 },
                 {
-                    data: 'id_pemilik', // Mengambil nama pemilik dari relasi id_pemilik
+                    data: 'id_penyewa',
                     className: 'align-middle'
                 },
                 {
-                    data: 'id_toko',
+                    data: 'nama_penyewa',
                     className: 'align-middle'
                 },
                 {
-                    data: 'gambar',
-                    className: 'align-middle',
-                    render: function(data, type, full, meta) {
-                        return "<img src='" + data + "' height='100'/>";
-                    }
-                },
-                {
-                    data: 'alamat',
+                    data: 'no_ktp',
                     className: 'align-middle'
                 },
                 {
-                    data: 'luas_bangunan',
+                    data: 'tanggal_survei',
                     className: 'align-middle'
                 },
                 {
-                    data: 'cluster',
+                    data: 'waktu',
                     className: 'align-middle'
                 },
                 {
-                    data: 'harga',
-                    className: 'align-middle',
-                    render: function(data, type, full, meta) {
-                        return formatRupiah(data);
-                    }
+                    data: 'keterangan',
+                    className: 'align-middle'
                 },
                 {
                     data: 'action',
@@ -123,29 +109,13 @@
         });
     });
 
-    function formatRupiah(angka) {
-        var numberString = angka.toString();
-        var split = numberString.split(',');
-        var sisa = split[0].length % 3;
-        var rupiah = split[0].substr(0, sisa);
-        var ribuan = split[0].substr(sisa).match(/\d{3}/g);
-
-        if (ribuan) {
-            separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
-        }
-
-        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-        return 'Rp ' + rupiah;
-    }
-
     function deleteItem(button) {
         var id = $(button).data('id');
-        var name = $(button).data('nama');
+        var id_penyewa = $(button).data('id_penyewa');
 
         Swal.fire({
             title: 'Kamu Yakin?',
-            text: 'Kamu ingin menghapus store ' + name + '.',
+            text: 'Kamu ingin menghapus survei ' + name + '.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -154,7 +124,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/stores/' + id,
+                    url: '/survei/' + id,
                     type: 'DELETE',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')

@@ -52,7 +52,12 @@
                     </div>
                     <div class="form-group">
                         <label for="cluster">Cluster:</label>
-                        <input type="text" name="cluster" class="form-control" value="{{ $store->cluster }}" readonly>
+                        <div id="map" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <a href="{{ route('survei.create') }}" class="btn btn-primary btn-lg btn-block btn-wide">
+                            <i class="fas fa-plus"></i> Survei
+                        </a>
                     </div>
                 </div>
             </div>
@@ -83,5 +88,32 @@
         var harga = parseInt(hargaInput.value);
         hargaInput.value = 'Rp ' + formatRupiah(harga);
     }
+
+    var map = L.map('map').setView([-7.0, 113.9], 10); // Pusatkan peta ke Kabupaten Sumenep
+    var marker;
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+
+    // Add search bar control
+    var geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false
+    }).on('markgeocode', function(e) {
+        var latlng = e.geocode.center;
+        map.setView(latlng, 13);
+        if (marker) {
+            marker.setLatLng(latlng).update();
+        } else {
+            marker = L.marker(latlng).addTo(map);
+        }
+    }).addTo(map);
+
+    // Add attribution control with geocoder link
+    L.control.attribution({
+        prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Search powered by <a href="https://nominatim.openstreetmap.org" target="_blank">Nominatim</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 </script>
 @endsection

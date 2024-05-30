@@ -121,57 +121,74 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-
         $request->validate([
-            'name' => 'required|string|max:255|unique:users,name,' . $id,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'telepon' => ['required', 'string', 'unique:users,telepon,' . $id, 'regex:/^\d{10,12}$/'],
+            'name' => 'required|string',
+            'alamat' => 'required|string',
+            'email' => 'required|string|email|unique:users,email,' . $id,
+            'telepon' => 'required|string|unique:users,telepon,' . $id,
             'jenkel' => 'required|string',
             'tgl_lahir' => 'required|date',
             'tmpt_lahir' => 'required|string',
             'role' => 'required|exists:roles,id',
         ]);
 
-        // Simpan informasi updated_by
-        $userData = $request->only(['name', 'no_ktp', 'alamat', 'email', 'jenkel', 'tgl_lahir', 'tmpt_lahir', 'telepon']);
+        // Get User data
+        $user = User::findOrFail($id);
+
+        // Update User data
+        $userData = $request->except(['_token', '_method', 'role']);
+
+        if ($request->has('password') && !empty($request->input('password'))) {
+            $userData['password'] = Hash::make($request->input('password'));
+        }
+
         $userData['updated_by'] = Auth::user()->name;
         $user->update($userData);
 
-        // Simpan data Pemilik jika diperlukan
-        if ($user->hasRole('Pemilik')) {
-            $pemilikData = [
-                'name' => $request->input('name'),
-                'alamat' => $request->input('alamat'),
-                'telepon' => $request->input('telepon'),
-                'updated_by' => Auth::user()->name,
-            ];
-            $user->pemilik()->updateOrCreate(['id_pemilik' => $user->id], $pemilikData);
-        } else {
-            $user->pemilik()->where('id_pemilik', $user->id)->delete();
-        }
-
-        // Simpan data Penyewa jika diperlukan
-        if ($user->hasRole('Penyewa')) {
-            $penyewaData = [
-                'no_ktp' => $request->input('no_ktp'),
-                'name' => $request->input('name'),
-                'alamat' => $request->input('alamat'),
-                'telepon' => $request->input('telepon'),
-                'updated_by' => Auth::user()->name,
-            ];
-            $user->penyewa()->updateOrCreate(['id_penyewa' => $user->id], $penyewaData);
-        } else {
-            $user->penyewa()->where('id_penyewa', $user->id)->delete();
-        }
-
-        // Sinkronisasi peran pengguna
+        // Update role
         $user->syncRoles([$request->input('role')]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User, Pemilik, and Penyewa updated successfully.'
-        ]);
+        // Check role and update corresponding related data
+        if ($user->hasRole('Pemilik')) {
+            $pemilik = Pemilik::where('id_pemilik', $user->id)->first();
+            if (!$pemilik) {
+                $pemilik = new Pemilik();
+                $pemilik->id_pemilik = $user->id; // Ensure the relationship between user and pemilik is set correctly
+            }
+            $pemilikData = [
+                'name' => $request->name,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'updated_by' => Auth::user()->name,
+            ];
+            $pemilik->fill($pemilikData)->save();
+
+            // Remove Penyewa data if previously set
+            Penyewa::where('id_penyewa', $user->id)->delete();
+        } elseif ($user->hasRole('Penyewa')) {
+            $penyewa = Penyewa::where('id_penyewa', $user->id)->first();
+            if (!$penyewa) {
+                $penyewa = new Penyewa();
+                $penyewa->id_penyewa = $user->id; // Ensure the relationship between user and penyewa is set correctly
+            }
+            $penyewaData = [
+                'no_ktp' => $request->no_ktp,
+                'name' => $request->name,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'updated_by' => Auth::user()->name,
+            ];
+            $penyewa->fill($penyewaData)->save();
+
+            // Remove Pemilik data if previously set
+            Pemilik::where('id_pemilik', $user->id)->delete();
+        } else {
+            // Remove Pemilik and Penyewa data if role is neither Pemilik nor Penyewa
+            Pemilik::where('id_pemilik', $user->id)->delete();
+            Penyewa::where('id_penyewa', $user->id)->delete();
+        }
+
+        return response()->json(['success' => true, 'message' => 'User and related data updated successfully.']);
     }
 
     public function destroy($id)

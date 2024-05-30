@@ -23,8 +23,13 @@ class Store extends Model
         'updated_by'
     ]; 
     
+    /**
+     * Definisi relasi dengan model Pemilik.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function pemilik()
     {
-        return $this->belongsTo(Pemilik::class, 'user_id', 'id_pemilik');
+        return $this->belongsTo(Pemilik::class, 'id_pemilik');
     }
 }

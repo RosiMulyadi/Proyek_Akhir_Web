@@ -22,7 +22,7 @@ class Pemilik extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'name', 'alamat', 'telepon');
+        return $this->belongsTo(User::class, 'id_pemilik', 'id');
     }
 
     public function store()
