@@ -25,6 +25,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-header">
+                        <a href="{{ route('survei.create') }}" class="btn btn-sm btn-primary">Tambah</a>
+                    </div>
                     @if ($message = Session::get('success'))
                     <div class="alert alert-success">
                         <p>{{ $message }}</p>

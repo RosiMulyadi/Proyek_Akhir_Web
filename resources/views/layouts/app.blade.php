@@ -61,6 +61,7 @@
     <!-- Tambahkan Leaflet Control Geocoder CSS dan JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="{{ asset('js/leaflet.js') }}"></script>
 
 
 </head>

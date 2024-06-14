@@ -5,8 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\{PemilikController, PenyewaController, UserController, RoleController, PermissionController, StoreController, PengajuanSurveiController};
-use App\Models\PengajuanSurvei;
+use App\Http\Controllers\{PembayaranController, PemilikController, PenyewaController, UserController, RoleController, PermissionController, StoreController, PengajuanSurveiController, SewaController};
 
 /*
 |--------------------------------------------------------------------------
@@ -86,4 +85,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/survei', PengajuanSurveiController::class);
     Route::put('/survei/{id}', [PengajuanSurveiController::class, 'update'])->name('survei.update');
     Route::delete('/survei/{id}', [PengajuanSurveiController::class, 'destroy'])->name('survei.destroy');
+    Route::get('/sewa', [SewaController::class, 'index'])->name('sewa.index');
+    Route::resource('/sewa', SewaController::class);
+    Route::post('sewa/store', [SewaController::class, 'store'])->name('sewa.store');
+    Route::get('/sewa/{id}', 'SewaController@show')->name('sewa.show');
+    Route::resource('/sewa', SewaController::class);
+    Route::put('/sewa/{id}', [SewaController::class, 'update'])->name('sewa.update');
+    Route::delete('/sewa/{id}', [SewaController::class, 'destroy'])->name('sewa.destroy');
+    Route::get('/bayar', [PembayaranController::class, 'index'])->name('bayar.index');
+    Route::resource('/bayar', PembayaranController::class);
+    Route::post('bayar/store', [PembayaranController::class, 'store'])->name('bayar.store');
+    Route::get('/bayar/{id}', 'PembayaranController@show')->name('bayar.show');
+    Route::resource('/bayar', PembayaranController::class);
+    Route::put('/bayar/{id}', [PembayaranController::class, 'update'])->name('bayar.update');
+    Route::delete('/bayar/{id}', [PembayaranController::class, 'destroy'])->name('bayar.destroy');
 })->middleware('web');

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class StoreController extends Controller
 {
@@ -100,7 +101,7 @@ class StoreController extends Controller
         $pemilik = Pemilik::where('id_pemilik', $request->input('id_pemilik'))->first();
 
         // Prepare store data
-        $storeData = $request->except('gambar', 'cluster');
+        $storeData = $request->except('gambar');
 
         if ($request->hasFile('gambar')) {
             $gambarPath = $request->file('gambar')->store('gambar', 'public');
@@ -110,12 +111,11 @@ class StoreController extends Controller
         // Set metadata fields
         $storeData['created_by'] = Auth::user()->name;
 
-        // Get the cluster map URL
-        $cluster = $request->input('cluster');
-        $mapUrl = $cluster === 'Sumenep' ? 'https://maps.example.com/sumenep' : 'https://maps.example.com/default';
+        // Get the cluster data based on the provided address
+        $clusterData = $this->getClusterData($request->alamat);
 
-        // Add the map URL to store data
-        $storeData['cluster'] = $mapUrl;
+        // Add the cluster data to store data
+        $storeData['cluster'] = $clusterData;
 
         // Create the Store entry and associate it with the Pemilik model
         $store = new Store($storeData);
@@ -123,13 +123,27 @@ class StoreController extends Controller
         $store->id_pemilik = $request->input('id_pemilik'); // Update the id_pemilik field
         $store->save();
 
-        return response()->json(['success' => true, 'message' => 'Store created successfully.', 'store' => $store, 'mapUrl' => $mapUrl]);
+        return response()->json(['success' => true, 'message' => 'Store created successfully.', 'store' => $store]);
+    }
+
+    private function getClusterData($address)
+    {
+        // Here you need to implement a method to retrieve the map URL based on the provided address.
+        // For demonstration purposes, let's assume we have the map URL already.
+        $mapUrl = 'https://maps.google.com/maps?q=' . urlencode($address);
+
+        return $mapUrl;
     }
 
     public function show($id)
     {
-        $store = Store::with('pemilik')->find($id);
-        return view('pages.stores.show', compact('store'));
+        $store = Store::findOrFail($id);
+        $storeData = $store->toArray();
+
+        // Assuming 'cluster' field contains JSON string with 'lat' and 'lng' keys
+        $storeData['cluster'] = json_decode($store->cluster, true);
+
+        return view('pages.stores.show', compact('store', 'storeData'));
     }
 
     public function edit($id)
@@ -144,45 +158,53 @@ class StoreController extends Controller
         // Validate the request
         $request->validate([
             'id_pemilik' => 'required|string|exists:pemilik,id_pemilik',
-            'id_toko' => 'required|string',
+            'id_toko' => 'required|string|unique:stores,id_toko,' . $id,
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'alamat' => 'required|string',
             'luas_bangunan' => 'required|string',
             'harga' => 'required|string',
         ]);
-
+    
         // Retrieve the Store model based on the provided id
         $store = Store::findOrFail($id);
-
+    
         // Retrieve the Pemilik model based on the provided id_pemilik value
         $pemilik = Pemilik::where('id_pemilik', $request->input('id_pemilik'))->first();
-
+    
         // Prepare store data
-        $storeData = $request->except('gambar', 'cluster');
-
+        $storeData = $request->except('gambar');
+    
         if ($request->hasFile('gambar')) {
             $gambarPath = $request->file('gambar')->store('gambar', 'public');
             $storeData['gambar'] = $gambarPath;
         }
-
+    
         // Set metadata fields
         $storeData['updated_by'] = Auth::user()->name;
-
-        // Get the cluster map URL
-        $cluster = $request->input('cluster');
-        $mapUrl = $cluster === 'Sumenep' ? 'https://maps.example.com/sumenep' : 'https://maps.example.com/default';
-
-        // Add the map URL to store data
-        $storeData['cluster'] = $mapUrl;
-
+    
+        // Get the cluster data based on the provided address
+        $clusterData = $this->getClusterDataUpdate($request->alamat);
+    
+        // Add the cluster data to store data
+        $storeData['cluster'] = $clusterData;
+    
         // Update the Store entry and associate it with the Pemilik model
         $store->update($storeData);
         $store->pemilik()->associate($pemilik);
         $store->id_pemilik = $request->input('id_pemilik'); // Update the id_pemilik field
         $store->save();
-
-        return response()->json(['success' => true, 'message' => 'Store updated successfully.', 'store' => $store, 'mapUrl' => $mapUrl]);
+    
+        return response()->json(['success' => true, 'message' => 'Store updated successfully.', 'store' => $store]);
     }
+    
+    private function getClusterDataUpdate($address)
+    {
+        // Here you need to implement a method to retrieve the map URL based on the provided address.
+        // For demonstration purposes, let's assume we have the map URL already.
+        $mapUrl = 'https://maps.google.com/maps?q=' . urlencode($address);
+    
+        return $mapUrl;
+    }    
 
     public function destroy($id)
     {

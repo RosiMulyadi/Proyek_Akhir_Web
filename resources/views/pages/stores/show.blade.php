@@ -55,8 +55,8 @@
                         <div id="map" style="width: 100%; height: 300px;"></div>
                     </div>
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <a href="{{ route('survei.create') }}" class="btn btn-primary btn-lg btn-block btn-wide">
-                            <i class="fas fa-plus"></i> Survei
+                        <a href="{{ route('sewa.create') }}" class="btn btn-primary btn-lg btn-block btn-wide">
+                            <i class="fas fa-plus"></i> Pesan/Sewa
                         </a>
                     </div>
                 </div>
@@ -65,55 +65,130 @@
     </div>
 </div>
 @endsection
+
 @section('script')
 <script>
-    function formatRupiah(angka) {
-        var number_string = angka.toString();
-        var split = number_string.split(',');
-        var sisa = split[0].length % 3;
-        var rupiah = split[0].substr(0, sisa);
-        var ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+    document.addEventListener('DOMContentLoaded', function() {
+        function formatRupiah(angka) {
+            var number_string = angka.toString(),
+                split = number_string.split(','),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-        if (ribuan) {
-            var separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
+            if (ribuan) {
+                var separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            return rupiah;
         }
 
-        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-        return rupiah;
-    }
-
-    var hargaInput = document.querySelector('input[name="harga"]');
-    if (hargaInput) {
-        var harga = parseInt(hargaInput.value);
-        hargaInput.value = 'Rp ' + formatRupiah(harga);
-    }
-
-    var map = L.map('map').setView([-7.0, 113.9], 10); // Pusatkan peta ke Kabupaten Sumenep
-    var marker;
-
-    // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-        subdomains: ['a', 'b', 'c']
-    }).addTo(map);
-
-    // Add search bar control
-    var geocoder = L.Control.geocoder({
-        defaultMarkGeocode: false
-    }).on('markgeocode', function(e) {
-        var latlng = e.geocode.center;
-        map.setView(latlng, 13);
-        if (marker) {
-            marker.setLatLng(latlng).update();
-        } else {
-            marker = L.marker(latlng).addTo(map);
+        var hargaInput = document.querySelector('input[name="harga"]');
+        if (hargaInput) {
+            var harga = parseInt(hargaInput.value.replace(/[^,\d]/g, ''), 10);
+            hargaInput.value = 'Rp ' + formatRupiah(harga);
         }
-    }).addTo(map);
 
-    // Add attribution control with geocoder link
-    L.control.attribution({
-        prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Search powered by <a href="https://nominatim.openstreetmap.org" target="_blank">Nominatim</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        var map;
+        var marker;
+
+        // Function to save store data to localStorage
+        function saveStoreData(storeData) {
+            localStorage.setItem('store', JSON.stringify(storeData));
+        }
+
+        // Function to load store data from localStorage
+        function loadStoreData() {
+            var data = JSON.parse(localStorage.getItem('store'));
+            if (data) {
+                return data;
+            } else {
+                return null;
+            }
+        }
+
+        // Function to initialize map and set view
+        function initializeMap() {
+            var storeData = loadStoreData();
+            if (storeData && storeData.clusterLocation) {
+                map = L.map('map').setView([storeData.clusterLocation.lat, storeData.clusterLocation.lng], 13);
+                marker = L.marker([storeData.clusterLocation.lat, storeData.clusterLocation.lng]).addTo(map)
+                    .bindPopup(storeData.clusterLocation.location)
+                    .openPopup();
+            } else {
+                map = L.map('map').setView([-7.0, 113.9], 10); // Default view if no saved location
+            }
+
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                subdomains: ['a', 'b', 'c']
+            }).addTo(map);
+
+            // // Add search bar control
+            // var geocoder = L.Control.geocoder({
+            //     defaultMarkGeocode: false
+            // }).on('markgeocode', function(e) {
+            //     var latlng = e.geocode.center;
+            //     var locationName = e.geocode.name;
+            //     map.setView(latlng, 13);
+            //     if (marker) {
+            //         marker.setLatLng(latlng).update()
+            //             .bindPopup(locationName)
+            //             .openPopup();
+            //     } else {
+            //         marker = L.marker(latlng).addTo(map)
+            //             .bindPopup(locationName)
+            //             .openPopup();
+            //     }
+            //     saveStoreData({
+            //         clusterLocation: {
+            //             lat: latlng.lat,
+            //             lng: latlng.lng,
+            //             location: locationName
+            //         }
+            //     });
+            // }).addTo(map);
+
+            // Add attribution control with geocoder link
+            L.control.attribution({
+                prefix: '<a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | Search powered by <a href="https://nominatim.openstreetmap.org" target="_blank">Nominatim</a> | Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+
+        // Function to update map with new marker data
+        function updateMapWithNewMarkerData(latlng, locationName) {
+            map.setView(latlng, 13);
+            if (marker) {
+                marker.setLatLng(latlng).update()
+                    .bindPopup(locationName)
+                    .openPopup();
+            } else {
+                marker = L.marker(latlng).addTo(map)
+                    .bindPopup(locationName)
+                    .openPopup();
+            }
+            saveStoreData({
+                clusterLocation: {
+                    lat: latlng.lat,
+                    lng: latlng.lng,
+                    location: locationName
+                }
+            });
+        }
+
+        // Load the map
+        initializeMap();
+
+        // Update map with new marker data when "Show" button is clicked
+        document.getElementById('show-button').addEventListener('click', function() {
+            var latlng = new L.LatLng(-7.033, 113.917); // Example coordinates for new cluster location
+            var locationName = 'Kepanjin, Kabupaten Sumenep';
+            updateMapWithNewMarkerData(latlng, locationName);
+        });
+
+    });
 </script>
 @endsection

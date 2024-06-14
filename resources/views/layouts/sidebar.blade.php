@@ -45,6 +45,23 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item{{ request()->is('sewa*') ? ' menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('sewa*')? 'active' : '' }}">
+                        <i class="nav-icon fas fa-store"></i>
+                        <p>
+                            Sewa
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('sewa.index') }}" class="nav-link {{ request()->is('sewa*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Sewa</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item{{ request()->is('pemilik*') || request()->is('penyewa*') ? ' menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('pemilik*') || request()->is('penyewa*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
@@ -83,6 +100,23 @@
                             <a href="{{ route('survei.index') }}" class="nav-link {{ request()->is('survei*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pengajuan Survei</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item{{ request()->is('bayar*') ? ' menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('bayar*')? 'active' : '' }}">
+                        <i class="nav-icon fas fa-store"></i>
+                        <p>
+                            Pembayaran
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('bayar.index') }}" class="nav-link {{ request()->is('bayar*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pembayaran</p>
                             </a>
                         </li>
                     </ul>

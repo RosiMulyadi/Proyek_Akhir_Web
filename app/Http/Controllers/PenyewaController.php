@@ -41,7 +41,11 @@ class PenyewaController extends Controller
                     // Kembalikan telepon sebagai string kosong jika tidak ada telepon yang tersedia
                     return $row->telepon ?? '';
                 })
-                ->rawColumns(['id_penyewa']) // Tentukan kolom ini sebagai raw HTML agar hyperlink dapat ditampilkan dengan benar
+                ->addColumn('action', function ($row) {
+                    $route = route('stores.index');
+                    return '<a href="'.$route.'" class="btn btn-primary">Lihat Store</a>';
+                })
+                ->rawColumns(['id_penyewa', 'action']) // Tentukan kolom ini sebagai raw HTML agar hyperlink dapat ditampilkan dengan benar
                 ->toJson();
         }
 

@@ -25,9 +25,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <!-- <div class="card-header">
-                        <a href="{{ route('penyewa.create') }}" class="btn btn-sm btn-primary">Tambah</a>
-                    </div> -->
                     @if ($message = Session::get('success'))
                     <div class="alert alert-success">
                         <p>{{ $message }}</p>
@@ -45,6 +42,7 @@
                                         <th>No KTP</th>
                                         <th>Alamat</th>
                                         <th>Telepon</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -94,6 +92,11 @@
                     data: 'telepon',
                     name: 'telepon'
                 }, // Kolom telepon
+                {
+                    data: 'action',
+                    className: 'align-middle text-center',
+                    orderable: false,
+                }
             ],
             // Rest of the DataTables settings
         });
